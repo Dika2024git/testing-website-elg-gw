@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elang GPT - API Backend Canggih</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🦅</text></svg>">
+</head>
+<body>
+  <style>
+    /* ========================================= */
+/* Variabel CSS & Reset Dasar       */
+/* ========================================= */
+:root {
+    --primary-color: #007bff;
+    --primary-color-dark: #005ec4; /* Digunakan untuk hover/active state */
+    --secondary-color: #1a2533;
+    --text-color: #34495e;
+    --light-text-color: #4a5a6a;
+    --bg-gradient-start: #e6f7ff;
+    --bg-gradient-end: #b3e0ff;
+    --success-color: #28a745;
+    --white-color: #ffffff;
+    --container-bg: rgba(255, 255, 255, 0.78);
+    --container-shadow: rgba(0, 0, 0, 0.1);
+    --container-shadow-hover: rgba(0, 0, 0, 0.18);
+    --border-radius-lg: 18px;
+    --border-radius-md: 12px;
+    --transition-speed-fast: 0.3s;
+    --transition-speed-normal: 0.5s;
+    --transition-speed-slow: 0.8s;
+    --preloader-transition: 0.6s;
+    --container-load-delay: 0.2s;
+    --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* ========================================= */
+/* Body & Background                */
+/* ========================================= */
+body {
+    font-family: var(--font-main);
+    text-align: center;
+    background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end), #cceeff, var(--bg-gradient-start));
+    background-size: 300% 300%;
+    animation: gradientAnimation 15s ease infinite;
+    min-height: 100vh;
+    padding: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--text-color);
+    overflow-x: hidden;
+    position: relative;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAYAAAAGCAYAAADgzO9IAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoV2luZG93cykiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6OEU2RjdDNjk3MEI4MTFFN0EzNEY5NDNGMzFFREFBMTIiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6OEU2RjdDNkE3MEI4MTFFN0EzNEY5NDNGMzFFREFBMTIiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo4RTZGN0M2NzcwQjgxMUU3QTM0Rjk0M0YzMUVEquatorial1MiIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo4RTZGN0M2ODcwQjgxMUU3QTM0Rjk0M0YzMUVEquatorial1MiIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PvqJw2QAAAAkSURBVHjaYvj//z8DNsAEpARFAtECURCxkEwNUIyBbQwABBgAu4sJdklgJ0kAAAAASUVORK5CYII=');
+    opacity: 0.08;
+    z-index: -1;
+    pointer-events: none;
+}
+
+@keyframes gradientAnimation {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* ========================================= */
+/* Styling Preloader (Bouncing Dots) */
+/* ========================================= */
+.preloader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.95);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity var(--preloader-transition) ease-in-out, visibility 0s var(--preloader-transition);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+.bouncing-dots {
+    display: flex;
+    gap: 15px;
+}
+
+.dot {
+    width: 18px;
+    height: 18px;
+    background-color: var(--primary-color);
+    border-radius: 50%;
+    animation: bounce 1.4s infinite ease-in-out both;
+}
+
+.dot:nth-child(1) { animation-delay: -0.32s; }
+.dot:nth-child(2) { animation-delay: -0.16s; }
+.dot:nth-child(3) { animation-delay: 0s; }
+
+@keyframes bounce {
+    0%, 80%, 100% { transform: scale(0); }
+    40% { transform: scale(1.0); }
+}
+
+body.loaded .preloader {
+    opacity: 0;
+    visibility: hidden;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+
+
+/* ========================================= */
+/* Styling Container                */
+/* ========================================= */
+.container {
+    background: var(--container-bg);
+    padding: 45px 55px;
+    border-radius: var(--border-radius-lg);
+    box-shadow: 0 12px 35px var(--container-shadow);
+    max-width: 650px;
+    width: 95%;
+    border: 1px solid rgba(255, 255, 255, 0.30);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    opacity: 0;
+    transform: translateY(40px) scale(0.97);
+    animation: containerFadeIn var(--transition-speed-slow) cubic-bezier(0.25, 0.8, 0.25, 1) calc(var(--preloader-transition) + var(--container-load-delay)) forwards;
+    transition: box-shadow var(--transition-speed-fast) ease-in-out,
+                background var(--transition-speed-fast) ease,
+                transform var(--transition-speed-fast) ease-in-out;
+}
+
+@keyframes containerFadeIn {
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+body.loaded .container:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 18px 45px var(--container-shadow-hover);
+    background: rgba(255, 255, 255, 0.88);
+}
+
+/* ========================================= */
+/* Header & Logo Styling (IMG Adjustments) */
+/* ========================================= */
+header {
+    margin-bottom: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.logo-elang { /* Style untuk tag <img> */
+    display: block; /* Pastikan berperilaku sebagai block */
+    width: 75px;    /* Sesuaikan ukuran jika perlu */
+    height: auto;   /* Jaga rasio aspek */
+    margin-bottom: 20px;
+    /* fill: dihapus karena tidak berlaku untuk img */
+    transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.1s; /* Transisi transform saja */
+    filter: drop-shadow(0 3px 5px rgba(0, 123, 255, 0.3));
+    opacity: 0;
+    transform: scale(0.5);
+    animation: logoFadeIn 0.6s ease-out calc(var(--preloader-transition) + var(--container-load-delay) + 0.1s) forwards;
+}
+
+@keyframes logoFadeIn {
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+body.loaded .logo-elang:hover {
+     transform: scale(1.2) rotate(10deg) translateY(-5px);
+     /* fill: dihapus */
+     filter: drop-shadow(0 5px 8px rgba(0, 94, 196, 0.4));
+     /* Opsi: Tambah filter lain jika mau, misal brightness */
+     /* filter: drop-shadow(...) brightness(1.1); */
+}
+
+/* Teks Header (Tidak berubah) */
+header h1, header h4 {
+    opacity: 0;
+    transform: translateY(15px);
+    animation: textFadeInUp 0.7s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+}
+
+header h1 {
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--secondary-color);
+    font-size: 2.6em;
+    letter-spacing: 1.8px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    animation-delay: calc(var(--preloader-transition) + var(--container-load-delay) + 0.3s);
+}
+
+header h4 {
+    font-weight: 400;
+    margin-top: 0;
+    margin-bottom: 0;
+    color: var(--light-text-color);
+    font-size: 1.2em;
+    animation-delay: calc(var(--preloader-transition) + var(--container-load-delay) + 0.4s);
+}
+
+@keyframes textFadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ========================================= */
+/* Main Content & Typing Animation   */
+/* ========================================= */
+main {
+    margin-bottom: 30px;
+}
+
+main p#deskripsi-utama {
+    font-size: 18px;
+    margin-top: 30px;
+    margin-bottom: 25px;
+    color: var(--text-color);
+    line-height: 1.7;
+    min-height: 54px;
+    position: relative;
+    opacity: 0;
+    animation: fadeIn 0.5s ease-out calc(var(--preloader-transition) + var(--container-load-delay) + 0.5s) forwards;
+}
+
+.cursor {
+    display: inline-block;
+    background-color: var(--secondary-color);
+    margin-left: 3px;
+    width: 3px;
+    height: 1.2em;
+    animation: blinkCursor 1s infinite;
+    opacity: 0;
+    position: relative;
+    bottom: -2px;
+}
+
+.cursor.visible {
+     opacity: 1;
+}
+
+.cursor.hidden {
+    opacity: 0;
+    animation: none;
+}
+
+@keyframes blinkCursor {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+main b {
+    display: block;
+    margin-top: 40px;
+    margin-bottom: 15px;
+    color: var(--secondary-color);
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 600;
+    opacity: 0;
+    transform: translateY(15px);
+    animation: textFadeInUp 0.7s cubic-bezier(0.25, 0.8, 0.25, 1) calc(var(--preloader-transition) + var(--container-load-delay) + 1.0s) forwards;
+}
+
+/* ========================================= */
+/* Tombol Styling                */
+/* ========================================= */
+button {
+    padding: 16px 35px;
+    border: none;
+    border-radius: var(--border-radius-md);
+    font-size: 18px;
+    cursor: pointer;
+    margin-top: 5px;
+    font-weight: bold;
+    transition: all var(--transition-speed-fast) ease;
+    position: relative;
+    overflow: hidden;
+    outline-offset: 4px;
+    opacity: 0;
+    transform: scale(0.9);
+    animation: buttonFadeInScale 0.5s ease-out calc(var(--preloader-transition) + var(--container-load-delay) + 1.1s) forwards;
+}
+
+@keyframes buttonFadeInScale {
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+button:focus-visible {
+    outline: 3px solid rgba(0, 123, 255, 0.5);
+}
+button:focus {
+    outline: none;
+}
+
+button:active {
+    transform: scale(0.94);
+}
+
+.blue-large-btn {
+    background-image: linear-gradient(45deg, var(--primary-color) 0%, #339aff 100%);
+    color: var(--white-color);
+    width: 100%;
+    box-shadow: 0 6px 15px rgba(0, 123, 255, 0.3);
+    letter-spacing: 0.5px;
+}
+
+body.loaded .blue-large-btn:hover {
+    background-image: linear-gradient(45deg, var(--primary-color-dark) 0%, var(--primary-color) 100%);
+    box-shadow: 0 9px 20px rgba(0, 94, 196, 0.35);
+    transform: translateY(-4px) scale(1.03);
+}
+
+.blue-large-btn.loading {
+    cursor: wait;
+    background-image: none;
+    background-color: var(--primary-color-dark);
+    transform: translateY(0) scale(1);
+    box-shadow: 0 6px 15px rgba(0, 123, 255, 0.3);
+}
+
+.blue-large-btn.loading span {
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s 0.3s, opacity 0.3s ease;
+}
+
+/* ========================================= */
+/* Spinner Tombol Styling           */
+/* ========================================= */
+.blue-large-btn .spinner {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 24px;
+    height: 24px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: var(--white-color);
+    border-left-color: var(--white-color);
+    animation: spin 0.7s linear infinite;
+}
+
+.blue-large-btn.loading .spinner {
+    display: block;
+}
+
+@keyframes spin {
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+
+/* ========================================= */
+/* Notifikasi Styling             */
+/* ========================================= */
+.notifikasi {
+    display: flex;
+    align-items: center;
+    position: fixed;
+    top: 30px;
+    left: 50%;
+    transform: translate(-50%, -200%) scale(0.8);
+    background: linear-gradient(135deg, var(--success-color), #34c759);
+    color: var(--white-color);
+    padding: 15px 25px;
+    border-radius: var(--border-radius-md);
+    box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.2);
+    font-size: 17px;
+    font-weight: 500;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: transform 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity var(--transition-speed-normal) ease-out, visibility 0s var(--transition-speed-normal);
+}
+
+.notifikasi.show {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+    visibility: visible;
+    transition: transform 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity var(--transition-speed-normal) ease-out, visibility 0s 0s;
+}
+
+.notif-icon {
+    margin-right: 12px;
+    font-size: 1.3em;
+    line-height: 1;
+}
+
+.notif-text {
+    flex-grow: 1;
+    text-align: left;
+}
+
+/* ========================================= */
+/* Footer Styling                */
+/* ========================================= */
+footer {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    font-size: 14px;
+    color: var(--light-text-color);
+    opacity: 0;
+    transform: translateY(10px);
+    animation: textFadeInUp 0.6s ease-out calc(var(--preloader-transition) + var(--container-load-delay) + 1.3s) forwards;
+}
+
+/* Keyframe umum untuk fade-in (digunakan oleh paragraf) */
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+    }
+}
+  </style>
+    <div class="preloader">
+        <div class="bouncing-dots">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <header>
+            <img src="logo-elang.png" alt="Logo Elang GPT" class="logo-elang">
+
+            <h1>ELANG GPT</h1>
+            <h4>API Anti Ngelag, Bray!</h4>
+        </header>
+        <main>
+             <p id="deskripsi-utama">
+                <span id="typing-text" data-text="Wuzzz! API Kita Aman, Kenceng Poll, Pinter Pula! Sistem Tinggal Colok!"></span><span class="cursor">&nbsp;</span>
+            </p>
+            <b>PENCET INI BUAT API-NYA:</b>
+             <button id="tombolAksi" class="blue-large-btn">
+                <span>Masuk Sekarang</span>
+                <div class="spinner"></div>
+            </button>
+        </main>
+         <footer>
+            <p>&copy; <span id="tahun"></span> Elang GPT. All Rights Reserved.</p>
+        </footer>
+    </div>
+
+    <div id="notifikasi" class="notifikasi" role="alert" aria-live="assertive">
+        <span class="notif-icon"><i class="fas fa-check-circle"></i></span>
+        <span class="notif-text">Tungguin Yak, Lagi Ngeload... Sabar euy!</span>
+    </div>
+
+    <script defer>
+      /**
+ * Menjalankan fungsi utama setelah DOM siap.
+ * Preloader dihandle oleh window.onload.
+ */
+document.addEventListener('DOMContentLoaded', () => {
+    // Ambil elemen yang diperlukan untuk fungsi inti
+    const tombolAksi = document.getElementById("tombolAksi");
+    const notifikasiElem = document.getElementById("notifikasi");
+    const teksTombolSpan = tombolAksi?.querySelector("span");
+    const typingTextElement = document.getElementById("typing-text");
+    const cursorElement = document.querySelector(".cursor");
+    const tahunElement = document.getElementById("tahun");
+    const deskripsiElement = document.getElementById("deskripsi-utama"); // Ambil elemen p
+
+    // Durasi animasi notifikasi (sesuaikan dengan CSS)
+    const DURASI_ANIMASI_NOTIFIKASI_KELUAR_MS = 700;
+    const DURASI_TAMPIL_NOTIFIKASI_MS = 3000; // 3 detik tampil
+
+    // --- Inisialisasi Konten (Setelah DOM Ready) ---
+
+    // 1. Set tahun di footer
+    if (tahunElement) {
+        tahunElement.textContent = new Date().getFullYear();
+    }
+
+    // 2. Siapkan data untuk animasi mengetik
+    let textToType = null;
+    if (typingTextElement && cursorElement) {
+        textToType = typingTextElement.getAttribute('data-text');
+        if (!textToType) {
+            console.warn("Atribut 'data-text' tidak ditemukan pada #typing-text.");
+            typingTextElement.textContent = "Selamat datang di Elang GPT."; // Teks fallback
+            cursorElement.classList.add('hidden');
+        } else {
+             typingTextElement.textContent = ''; // Kosongkan teks awal
+        }
+    } else {
+        console.warn("Elemen untuk animasi mengetik tidak ditemukan.");
+    }
+
+    // 3. Tambahkan event listener ke tombol jika ada
+    if (tombolAksi) {
+        tombolAksi.addEventListener('click', handleButtonClick);
+    } else {
+        console.error("Error: Tombol aksi tidak ditemukan.");
+    }
+
+
+    // --- Logika Preloader (Menggunakan window.onload) ---
+    const bodyElement = document.body;
+    const preloaderElement = document.querySelector(".preloader");
+
+    window.onload = () => {
+        console.log("Semua aset halaman telah dimuat.");
+        if (preloaderElement) {
+            bodyElement.classList.add('loaded');
+
+            let preloaderTransitionDuration = 600;
+             try {
+                const durationStyle = getComputedStyle(preloaderElement).transitionDuration;
+                const durationSeconds = parseFloat(durationStyle.split(',')[0]);
+                if (!isNaN(durationSeconds)) {
+                     preloaderTransitionDuration = durationSeconds * 1000;
+                }
+             } catch (e) {
+                console.warn("Tidak dapat membaca durasi transisi preloader dari CSS, gunakan default.", e);
+             }
+
+            setTimeout(() => {
+                if (preloaderElement) { // Cek lagi jika preloader masih ada
+                    preloaderElement.style.display = 'none';
+                    console.log("Preloader dihapus dari DOM.");
+                }
+
+                 // Mulai animasi mengetik SETELAH preloader hilang
+                 if (typingTextElement && cursorElement && textToType) {
+                    setTimeout(() => {
+                         if (deskripsiElement) {
+                              // Pastikan elemen p sudah mulai visible (animasi CSS opacity dimulai)
+                              // Tidak perlu paksa opacity 1 di sini, biarkan CSS handle
+                         }
+                         startTypingAnimation(typingTextElement, cursorElement, textToType);
+                    }, 200); // Delay kecil setelah preloader hilang
+                 }
+
+            }, preloaderTransitionDuration);
+
+        } else {
+            console.warn("Elemen preloader tidak ditemukan.");
+             bodyElement.classList.add('loaded');
+             if (typingTextElement && cursorElement && textToType) {
+                startTypingAnimation(typingTextElement, cursorElement, textToType);
+             }
+        }
+    };
+
+
+    // --- Definisi Fungsi ---
+
+    function handleButtonClick() {
+         if (!tombolAksi || !notifikasiElem || !teksTombolSpan) {
+            console.error("Error: Elemen penting (tombol/notifikasi/span) hilang saat tombol diklik.");
+            return;
+        }
+        tombolAksi.disabled = true;
+        tombolAksi.classList.add("loading");
+        tampilkanNotifikasi()
+            .then(() => {
+                console.log("Notifikasi selesai, mengarahkan...");
+                // ### GANTI URL INI DENGAN TUJUAN ANDA ###
+                window.location.href = "/chat?text=halo";
+            })
+            .catch(error => {
+                console.error("Gagal menampilkan notifikasi:", error);
+                // ### GANTI URL INI DENGAN TUJUAN ANDA ###
+                window.location.href = "/chat?text=halo";
+                // pulihkanTombol();
+            });
+    }
+
+    function tampilkanNotifikasi() {
+         return new Promise((resolve, reject) => {
+            if (!notifikasiElem) {
+                return reject(new Error("Elemen notifikasi hilang saat akan ditampilkan."));
+            }
+            notifikasiElem.classList.add("show");
+            const timerMulaiHilang = setTimeout(() => {
+                notifikasiElem.classList.remove("show");
+                const timerSelesaiAnimasi = setTimeout(() => {
+                    resolve();
+                }, DURASI_ANIMASI_NOTIFIKASI_KELUAR_MS);
+            }, DURASI_TAMPIL_NOTIFIKASI_MS);
+        });
+    }
+
+    function startTypingAnimation(element, cursor, text, speed = 55) {
+         let index = 0;
+        element.textContent = '';
+        cursor.classList.remove('hidden');
+        cursor.classList.add('visible'); // Tampilkan cursor
+
+        function type() {
+            if (index < text.length) {
+                element.textContent += text.charAt(index);
+                index++;
+                setTimeout(type, speed);
+            } else {
+                // Selesai mengetik
+                setTimeout(() => {
+                    cursor.classList.remove('visible');
+                    cursor.classList.add('hidden');
+                }, 1500);
+            }
+        }
+        // Mulai animasi setelah jeda singkat
+        setTimeout(type, 300);
+    }
+
+    function pulihkanTombol() {
+        if (tombolAksi) {
+            tombolAksi.disabled = false;
+            tombolAksi.classList.remove("loading");
+            console.log("Tombol dipulihkan.");
+        }
+    }
+
+}); // Akhir dari DOMContentLoaded
+    </script>
+</body>
+</html>
